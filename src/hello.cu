@@ -1,6 +1,7 @@
 #include <stdio.h>
-#define N 1000000
+#define N 500000000
 #define HEAD 10
+#define LD 32
 
 #define HANDLE_ERROR(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line) {
@@ -11,10 +12,12 @@ inline void gpuAssert(cudaError_t code, const char *file, int line) {
 }
 
 __global__ void kernel(int* a, int* b, int* c){
-    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+    int flatBlockIdx = blockIdx.x + blockIdx.y * gridDim.x;
+    int flatThreadIdx = threadIdx.x + threadIdx.y * blockDim.x;
+    int idx = flatThreadIdx + flatBlockIdx * blockDim.x * blockDim.y;
     while (idx < N){
         c[idx] = a[idx] + b[idx];
-        idx = idx + blockDim.x * gridDim.x;
+        idx = idx + blockDim.x * blockDim.y * gridDim.x * gridDim.y;
     }
 }
 
@@ -22,8 +25,8 @@ int main(void){
     int *a, *b, *c;
     int *dev_a, *dev_b, *dev_c;
 
-    dim3 numBlocks(20, 1, 1);
-    dim3 threadsPerBlock(1024, 1, 1);
+    dim3 numBlocks(LD, LD, 1);
+    dim3 threadsPerBlock(LD, LD, 1);
 
     // malloc biasa ygy
     a = (int*) malloc(sizeof(int) * N);
