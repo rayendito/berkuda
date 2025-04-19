@@ -1,2 +1,2 @@
-# berkuda
-CUDA🐎🐎🐎🐎🐎🐎
+# berkuda 🐎
+CUDA
