@@ -9,3 +9,7 @@ add: src/add.cu
 dot: src/dot.cu
 	nvcc src/dot.cu -o bin/dot
 	./bin/dot
+
+sgemm_naive: src/sgemm_naive.cu
+	nvcc src/sgemm_naive.cu -o bin/sgemm_naive
+	./bin/sgemm_naive
